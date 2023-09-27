@@ -1,6 +1,7 @@
 from rest_framework.serializers import ModelSerializer, ReadOnlyField
 from .models import Topics, Video
 from apps.review.serializers import CommentSerializer
+from apps.review.models import WatchLater
 from django.db.models import Avg
 # from apps.video.serializer import *
 
@@ -30,12 +31,18 @@ class VideoDetailSerializer(ModelSerializer):
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)
+        rep['rating'] = instance.ratings.aggregate(Avg('rating'))['rating__avg']
         rep['likes'] = instance.likes.all().count()
         rep['dislikes'] = instance.dislikes.all().count()
         rep['comments'] = CommentSerializer(instance.comments.all(), many=True).data
         return rep
 
 
+class WatchLaterSerializer(ModelSerializer):
+    video = VideoListSerializer()
 
+    class Meta:
+        model = WatchLater
+        fields = ['video']
 
 

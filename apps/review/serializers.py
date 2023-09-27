@@ -65,28 +65,28 @@ class CommentActionSerializer(ModelSerializer):
 #         return self.Meta.model.objects.create(author=user, **validated_data)
 #
 #
-# class RatingActionSerializer(ModelSerializer):
-#     author = ReadOnlyField(source='author.email')
-#     video = ReadOnlyField()
-#
-#     class Meta:
-#         model = Rating
-# #         fields = '__all__'
-#
-#     def validate_rating(self, rating):
-#         if rating in range(1, 6):
-#             return rating
-#         raise ValidationError(
-#             'rating not be more 5'
-#         )
-#
-#     def validate_product(self, video):
-#         user = self.context.get('request').user
-#         if self.Meta.model.objects.filter(video=video, author=user):
-#             raise ValidationError(
-#                 "You can't be rating"
-#             )
-#         return video
+class RatingActionSerializer(ModelSerializer):
+    author = ReadOnlyField(source='author.email')
+    video = ReadOnlyField()
+
+    class Meta:
+        model = Rating
+        fields = '__all__'
+
+    def validate_rating(self, rating):
+        if rating in range(1, 6):
+            return rating
+        raise ValidationError(
+            'rating not be more 5'
+        )
+
+    def validate_product(self, video):
+        user = self.context.get('request').user
+        if self.Meta.model.objects.filter(video=video, author=user):
+            raise ValidationError(
+                "You can't be rating"
+            )
+        return video
 
 
 class LikeSerializer(ModelSerializer):
@@ -129,43 +129,11 @@ class WatchLaterActionSerializer(ModelSerializer):
         return self.Meta.model.objects.create(author=user, **validated_data)
 
 
-# <<<<<<< HEAD
-# class WatchLaterListSerializer(ModelSerializer):
+# class WatchLaterSerializer(ModelSerializer):
 #     video = VideoListSerializer()
+#     author = ReadOnlyField(source='author.email')
 #
 #     class Meta:
 #         model = WatchLater
 #         fields = ['video']
-#
-#
-# class WatchLaterCreateSerializer(ModelSerializer):
-#     author = ReadOnlyField(source='author.email')
-#
-#     class Meta:
-#         model = WatchLater
-#         fields = '__all__'
-#
-#
-# =======
-# class WatchLaterListSerializer(ModelSerializer):
-#     author = ReadOnlyField(source='author.email')
-#
-#     class Meta:
-#         model = WatchLater
-#         fields = 'video'
-#
-#
-# class WatchLaterDitailSerializer(ModelSerializer):
-#     author = ReadOnlyField(source='author.email')
-#
-#     class Meta:
-#         model = WatchLater
-#         fields = ['video', 'author']
 
-
-class WatchLaterSerializer(ModelSerializer):
-    author = ReadOnlyField(source='author.email')
-
-    class Meta:
-        model = WatchLater
-        fields = ['author', 'video']
