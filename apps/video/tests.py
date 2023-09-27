@@ -1,50 +1,47 @@
 from django.test import TestCase
-from django.core.files.uploadedfile import SimpleUploadedFile
-from .models import  *
+from django.contrib.auth import get_user_model
+from .models import Topics, Video
+
+User = get_user_model()
 
 class ModelTestCase(TestCase):
-    def setUp(self):
-        self.category = Category.objects.create(title='TestCategory')
-        video_image = SimpleUploadedFile("video.jpg", b"file_content")
-        self.video = Video.objects.create(
-            category=self.category,
+
+    @classmethod
+    def setUpTestData(cls):
+        # Создаем пользователя для тестов
+        cls.user = User.objects.create(email='test@example.com', password='testpassword')
+
+        # Создаем объект Topics для тестов
+        cls.topic = Topics.objects.create(title='TestTopic')
+
+        # Создаем объект Video для тестов
+        cls.video = Video.objects.create(
+            topics=cls.topic,
+            videos='test_video.mp4',
+            video_preview='test_preview.jpg',
             title='TestVideo',
-            videos=video_image,
             description='Test description',
-        )
-        
-        image = SimpleUploadedFile("preview.jpg", b"file_content")
-        self.video_preview = VideoPreview.objects.create(
-            image=image,
-            product=self.video,
+            user=cls.user
         )
 
-    def test_category_creation(self):
-        category = Category.objects.get(title='TestCategory')
-        self.assertEqual(category.title, 'TestCategory')
-        self.assertEqual(category.slug, 'testcategory')
+    def test_topic_creation(self):
+        topic = Topics.objects.get(title='TestTopic')
+        self.assertEqual(topic.title, 'TestTopic')
+        self.assertEqual(topic.slug, 'testtopic')
 
     def test_video_creation(self):
         video = Video.objects.get(title='TestVideo')
         self.assertEqual(video.title, 'TestVideo')
         self.assertEqual(video.slug, 'testvideo')
-        self.assertEqual(video.category, self.category)
-        self.assertEqual(video.in_stock, False)
-
-    def test_video_preview_creation(self):
-        video_preview = VideoPreview.objects.get(product=self.video)
-        self.assertIsNotNone(video_preview.image)
-        self.assertEqual(video_preview.product, self.video)
-
-    def test_str_methods(self):
-        category = Category.objects.get(title='TestCategory')
-        video = Video.objects.get(title='TestVideo')
-        video_preview = VideoPreview.objects.get(product=self.video)
-
-        self.assertEqual(str(category), 'TestCategory')
-        self.assertEqual(str(video), 'TestVideo')
-        self.assertEqual(str(video_preview), f'VideoPreview object ({video_preview.id})')
+        self.assertEqual(video.topics, self.topic)
 
     def test_video_description(self):
         video = Video.objects.get(title='TestVideo')
         self.assertEqual(video.get_description(), 'Test description')
+
+    def test_str_methods(self):
+        topic = Topics.objects.get(title='TestTopic')
+        video = Video.objects.get(title='TestVideo')
+
+        self.assertEqual(str(topic), 'TestTopic')
+        self.assertEqual(str(video), 'TestVideo')
