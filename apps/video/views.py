@@ -49,7 +49,6 @@ class VideoView(PermissionMixin, viewsets.ModelViewSet):
             return VideoListSerializer
         return VideoDetailSerializer
 
-
     @action(methods=['POST'], detail=True, permission_classes=[IsAuthenticated])
     def like(self, request, pk=None):
         video = self.get_object()
