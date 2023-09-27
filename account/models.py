@@ -52,12 +52,9 @@ class User(AbstractUser):
         code = get_random_string(length=10, allowed_chars='0123456789')
         self.forgot_password_code = code
 
-from django.db import models
-from django.contrib.auth import get_user_model
 
 # Create your models here.
 
-User = get_user_model()
 class Subscription(models.Model):
     subscriber = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriptions')
     target_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscribers')
