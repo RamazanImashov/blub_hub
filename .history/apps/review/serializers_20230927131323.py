@@ -1,4 +1,5 @@
 from rest_framework.serializers import ModelSerializer, ValidationError, ReadOnlyField
+<<<<<<< HEAD
 from .models import Like, Comment, Rating, Dislike, WatchLater
 # from apps.video.serializer import VideoListSerializer
 
