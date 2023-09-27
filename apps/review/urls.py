@@ -1,12 +1,12 @@
 from django.urls import path, include
-from .views import CommentView,  WatchLaterViewSet
+from .views import CommentView#,  WatchLaterViewSet
 from rest_framework.routers import DefaultRouter
 
 
 router = DefaultRouter()
 router.register('comments', CommentView)
 # router.register('ratings', RatingView)
-router.register('watch_later', WatchLaterViewSet)
+# router.register('watch_later', WatchLaterViewSet)
 
 
 urlpatterns = [

@@ -1,7 +1,7 @@
 from rest_framework import viewsets, generics
 from .models import Video, Topics
 from rest_framework.response import Response
-from .serializer import VideoDetailSerializer, VideoListSerializer, TopicsSerializer
+from .serializer import VideoDetailSerializer, VideoListSerializer, TopicsSerializer, WatchLaterSerializer
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
@@ -104,9 +104,28 @@ class VideoView(PermissionMixin, viewsets.ModelViewSet):
             message = request.data
             return Response(message, status=200)
 
+
+    @action(methods=['POST'], detail=True, permission_classes=[IsAuthenticated])
+    def rating(self, request, pk=None):
+        video = self.get_object()
+        user = request.user
+        serializer = RatingActionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(video=video, author=user)
+        message = 'rating'
+        return Response(message, status=200)
+
     def get_permissions(self):
         if self.action in ['create', 'update', 'partial_update', 'destroy']:
             self.permission_classes = [IsAuthorPermission]
         elif self.action in ['list', 'retrieve']:
             self.permission_classes = [AllowAny]
         return super().get_permissions()
+
+
+class WatchLaterViewSet(generics.ListAPIView):
+    serializer_class = WatchLaterSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.request.user.watch_later.all()
