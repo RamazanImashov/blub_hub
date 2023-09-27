@@ -24,9 +24,9 @@ class CommentView(PermissionMixin, ModelViewSet):
     serializer_class = CommentSerializer
 
 
-class RatingView(PermissionMixin, ModelViewSet):
-    queryset = Rating.objects.all()
-    serializer_class = RatingSerializer
+# class RatingView(PermissionMixin, ModelViewSet):
+#     queryset = Rating.objects.all()
+#     serializer_class = RatingSerializer
 
 
 # <<<<<<< HEAD
@@ -49,7 +49,6 @@ class RatingView(PermissionMixin, ModelViewSet):
 class WatchLaterViewSet(ModelViewSet):
     queryset = WatchLater.objects.all()
     serializer_class = WatchLaterSerializer
-
 
     def get_queryset(self):
         return self.request.user.watch_later.all()
