@@ -8,13 +8,8 @@ class ModelTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        # Создаем пользователя для тестов
         cls.user = User.objects.create(email='test@example.com', password='testpassword')
-
-        # Создаем объект Topics для тестов
         cls.topic = Topics.objects.create(title='TestTopic')
-
-        # Создаем объект Video для тестов
         cls.video = Video.objects.create(
             topics=cls.topic,
             videos='test_video.mp4',
