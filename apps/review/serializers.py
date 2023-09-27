@@ -1,6 +1,5 @@
 from rest_framework.serializers import ModelSerializer, ValidationError, ReadOnlyField
-from .models import Like, Comment, Rating, Dislike, WatchLater
-from apps.video.serializer import VideoListSerializer
+from .models import Like, Comment, Dislike, WatchLater
 
 
 class CommentSerializer(ModelSerializer):
@@ -32,56 +31,60 @@ class CommentActionSerializer(ModelSerializer):
             )
         return video
 
-
-class RatingSerializer(ModelSerializer):
-    author = ReadOnlyField(source='author.email')
-
-    class Meta:
-        model = Rating
-        fields = '__all__'
-
-    def validate_rating(self, rating):
-        if rating in range(1, 6):
-            return rating
-        raise ValidationError(
-            'rating not be more 5'
-        )
-
-    def validate_video(self, video):
-        user = self.context.get('request').user
-        if self.Meta.model.objects.filter(video=video, author=user):
-            raise ValidationError(
-                "You can't be rating"
-            )
-        return video
-
     def create(self, validated_data):
-        user = self.context.get('request').user
-        return self.Meta.model.objects.create(author=user, **validated_data)
+        comment = Comment.objects.create( **validated_data)
+        return comment
 
 
-class RatingActionSerializer(ModelSerializer):
-    author = ReadOnlyField(source='author.email')
-    video = ReadOnlyField()
+# class RatingSerializer(ModelSerializer):
+#     author = ReadOnlyField(source='author.email')
+#
+#     class Meta:
+#         model = Rating
+#         fields = '__all__'
+#
+#     def validate_rating(self, rating):
+#         if rating in range(1, 6):
+#             return rating
+#         raise ValidationError(
+#             'rating not be more 5'
+#         )
+#
+#     def validate_video(self, video):
+#         user = self.context.get('request').user
+#         if self.Meta.model.objects.filter(video=video, author=user):
+#             raise ValidationError(
+#                 "You can't be rating"
+#             )
+#         return video
 
-    class Meta:
-        model = Rating
-        fields = '__all__'
-
-    def validate_rating(self, rating):
-        if rating in range(1, 6):
-            return rating
-        raise ValidationError(
-            'rating not be more 5'
-        )
-
-    def validate_product(self, video):
-        user = self.context.get('request').user
-        if self.Meta.model.objects.filter(video=video, author=user):
-            raise ValidationError(
-                "You can't be rating"
-            )
-        return video
+#     def create(self, validated_data):
+#         user = self.context.get('request').user
+#         return self.Meta.model.objects.create(author=user, **validated_data)
+#
+#
+# class RatingActionSerializer(ModelSerializer):
+#     author = ReadOnlyField(source='author.email')
+#     video = ReadOnlyField()
+#
+#     class Meta:
+#         model = Rating
+# #         fields = '__all__'
+#
+#     def validate_rating(self, rating):
+#         if rating in range(1, 6):
+#             return rating
+#         raise ValidationError(
+#             'rating not be more 5'
+#         )
+#
+#     def validate_product(self, video):
+#         user = self.context.get('request').user
+#         if self.Meta.model.objects.filter(video=video, author=user):
+#             raise ValidationError(
+#                 "You can't be rating"
+#             )
+#         return video
 
 
 class LikeSerializer(ModelSerializer):
@@ -160,6 +163,7 @@ class WatchLaterActionSerializer(ModelSerializer):
 
 class WatchLaterSerializer(ModelSerializer):
     author = ReadOnlyField(source='author.email')
+
     class Meta:
         model = WatchLater
         fields = ['author', 'video']

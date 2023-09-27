@@ -1,7 +1,6 @@
 from rest_framework import viewsets, generics
 from .models import Video, Topics
 from rest_framework.response import Response
-
 from .serializer import VideoDetailSerializer, VideoListSerializer, TopicsSerializer
 from rest_framework.permissions import IsAdminUser, AllowAny, IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
@@ -10,7 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 import logging
 from rest_framework.decorators import action
-from .permissions import IsAdminPermission, IsAuthorPermission
+from .permissions import IsAuthorPermission
 from apps.review.serializers import *
 
 logger = logging.getLogger(__name__)
@@ -37,7 +36,6 @@ class VideoView(PermissionMixin, viewsets.ModelViewSet):
     filterset_fields = ['topics', 'title']
     search_fields = ['title']
 
-
     @method_decorator(cache_page(60*10))
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -51,15 +49,6 @@ class VideoView(PermissionMixin, viewsets.ModelViewSet):
             return VideoListSerializer
         return VideoDetailSerializer
 
-    @action(methods=['POST'], detail=True, permission_classes=[IsAuthenticated])
-    def rating(self, request, pk=None):
-        video = self.get_object()
-        user = request.user
-        serializer = RatingActionSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(video=video, author=user)
-            message = 'rating'
-            return Response(message, status=200)
 
     @action(methods=['POST'], detail=True, permission_classes=[IsAuthenticated])
     def like(self, request, pk=None):
@@ -117,9 +106,7 @@ class VideoView(PermissionMixin, viewsets.ModelViewSet):
             return Response(message, status=200)
 
     def get_permissions(self):
-        if self.action == 'create':
-            self.permission_classes = [IsAdminPermission]
-        elif self.action in ['update', 'partial_update', 'destroy']:
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
             self.permission_classes = [IsAuthorPermission]
         elif self.action in ['list', 'retrieve']:
             self.permission_classes = [AllowAny]
