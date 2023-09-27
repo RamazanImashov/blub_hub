@@ -2,7 +2,7 @@ from rest_framework.serializers import ModelSerializer, ReadOnlyField
 from .models import Topics, Video
 from apps.review.serializers import CommentSerializer
 from django.db.models import Avg
-
+# from apps.video.serializer import *
 
 class TopicsSerializer(ModelSerializer):
     class Meta:
